@@ -42,6 +42,7 @@ module.exports = {
     plugin(function ({ addVariant, addBase }) {
       addBase({
         html: { fontSize: '62.5%' },
+        body: { fontSize: '1.6rem' },
       });
       addVariant('mouse-focus', '&:focus:not(:focus-visible)');
     }),
