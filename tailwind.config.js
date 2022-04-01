@@ -39,7 +39,10 @@ module.exports = {
     require('@tailwindcss/forms')({
       strategy: 'class',
     }),
-    plugin(function ({ addVariant }) {
+    plugin(function ({ addVariant, addBase }) {
+      addBase({
+        html: { fontSize: '62.5%' },
+      });
       addVariant('mouse-focus', '&:focus:not(:focus-visible)');
     }),
   ],
