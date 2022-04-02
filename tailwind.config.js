@@ -39,6 +39,20 @@ module.exports = {
     extend: {
       fontFamily: { sans: ['Inter', ...defaultTheme.fontFamily.sans] },
       borderRadius: { primary: '0.6rem' },
+      keyframes: ({ theme }) => ({
+        stroke: {
+          '100%': { 'stroke-dashoffset': '0' },
+        },
+        scale: {
+          '0%, 100%': { transform: 'none' },
+          '50%': { transform: 'scale3d(1.1, 1.1, 1)' },
+        },
+        fill: {
+          '100%': {
+            boxShadow: `inset 0 0 0 5rem ${theme('colors.primary.DEFAULT')}`,
+          },
+        },
+      }),
     },
   },
   plugins: [
