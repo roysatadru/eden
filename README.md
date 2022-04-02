@@ -1,6 +1,8 @@
+[![Live Project Screenshot](assets/screenshots/starting-project.png 'Eden')](https://eden-azure.vercel.app/)
+  
 # Eden
 
-A ReactJS project based on [this mockup](https://dribbble.com/shots/15669113-Onboarding-Exploration/attachments/7464145?mode=media). **Live Project Link [TBD]**
+A ReactJS project based on [this mockup](https://dribbble.com/shots/15669113-Onboarding-Exploration/attachments/7464145?mode=media). **Live Project Link ---> [EDEN](https://eden-azure.vercel.app/)**
 
 ## Things to keep in mind
 
@@ -40,6 +42,7 @@ A ReactJS project based on [this mockup](https://dribbble.com/shots/15669113-Onb
 - [React Router DOM](https://reactrouter.com/)
   - To show two pages (a short guide for the users to help them figure out the features, that are worth looking)
   - To use [`<MemoryRouter>`](https://reactrouter.com/docs/en/v6/api#memoryrouter) in an interesting way
+    
     **NOTE**: We can achieve the same thing with useState or useReducer or Context API.
     So why am I using this approach?
     - To be a bit unique
@@ -47,6 +50,7 @@ A ReactJS project based on [this mockup](https://dribbble.com/shots/15669113-Onb
     - If this project can be thought of as a part of a larger application then probably we would use some kind of a routing library anyways so the extra bundle size sort of makes sense.
 - [React Hot Toast](https://react-hot-toast.com/) (it will be fun to use it for the first time)
 - [Canvas Confetti](https://www.kirilv.com/canvas-confetti/) (to celebrate the completion of the flow by the user)
+- [React Simple Star Rating](https://react-simple-star-rating.vercel.app/) (to show a rating component)
 - [Email JS](https://www.emailjs.com/) (to send the rating submissions to my email [satadru.roy98@gmail.com](mailto:satadru.roy98@gmail.com))
 
 ## More Info
@@ -77,5 +81,3 @@ A ReactJS project based on [this mockup](https://dribbble.com/shots/15669113-Onb
 - I also want to prove my expertise of ReactJS library.
 - I too want to show my familiarity with React@18.
 - I too want to host the project on either [Vercel](https://vercel.com/) or [Netlify](https://www.netlify.com/) to set up automatic builds which would make my life a bit easier.
-
-![Live Project Screenshot](not-complete.png 'Eden')
