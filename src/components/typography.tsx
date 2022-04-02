@@ -17,7 +17,7 @@ export function Typography(props: TypographyProps) {
     case 'primary-heading':
       return (
         <h1
-          className={`font-bold text-gray-800 text-5xl leading-none ${className}`}
+          className={`font-bold text-gray-800 text-4xl tablet:text-5xl tablet:leading-none ${className}`}
         >
           {children}
         </h1>
@@ -32,7 +32,9 @@ export function Typography(props: TypographyProps) {
 
     case 'primary-sub-heading':
       return (
-        <p className={`text-gray-400 leading-none ${className}`}>{children}</p>
+        <p className={`text-gray-400 tablet:leading-none ${className}`}>
+          {children}
+        </p>
       );
 
     case 'secondary-sub-text':

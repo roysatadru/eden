@@ -1,5 +1,5 @@
-[![Live Project Screenshot](assets/screenshots/starting-project.png 'Eden')](https://eden-azure.vercel.app/)
-  
+[![Live Project Screenshot](assets/screenshots/finished-project.png 'Live Project Screenshot')](https://eden-azure.vercel.app/)
+
 # Eden
 
 A ReactJS project based on [this mockup](https://dribbble.com/shots/15669113-Onboarding-Exploration/attachments/7464145?mode=media). **Live Project Link ---> [EDEN](https://eden-azure.vercel.app/)**
@@ -22,7 +22,7 @@ A ReactJS project based on [this mockup](https://dribbble.com/shots/15669113-Onb
   - User does pass proper inputs but there is no internet connection. (will show a toast to properly inform what's happening to the user)
   - There is internet connection and user doesn't have any problems in her/his input.
   - User will be moved to the next step
-  and this process will continue until all the steps are complete and...
+    and this process will continue until all the steps are complete and...
 - User finally is presented with a "Congratulations" page and asked to press "Launch Eden" button, which `onClick` will open a modal with some celebrations on the background and a modal asking user to give a rating to the app.
 - On the modal, there will be a button "Back to guides" which will redirect the user back to the Basic Guide page.
 
@@ -40,14 +40,17 @@ A ReactJS project based on [this mockup](https://dribbble.com/shots/15669113-Onb
 - [io-ts](https://gcanti.github.io/io-ts/) (for form input validations)
 - [Framer Motion](https://www.framer.com/motion/) (to apply some cool animations)
 - [React Router DOM](https://reactrouter.com/)
+
   - To show two pages (a short guide for the users to help them figure out the features, that are worth looking)
   - To use [`<MemoryRouter>`](https://reactrouter.com/docs/en/v6/api#memoryrouter) in an interesting way
-    
+
     **NOTE**: We can achieve the same thing with useState or useReducer or Context API.
     So why am I using this approach?
+
     - To be a bit unique
     - To experiment with a feature that is hardly ever used in this scenario.
     - If this project can be thought of as a part of a larger application then probably we would use some kind of a routing library anyways so the extra bundle size sort of makes sense.
+
 - [React Hot Toast](https://react-hot-toast.com/) (it will be fun to use it for the first time)
 - [Canvas Confetti](https://www.kirilv.com/canvas-confetti/) (to celebrate the completion of the flow by the user)
 - [React Simple Star Rating](https://react-simple-star-rating.vercel.app/) (to show a rating component)

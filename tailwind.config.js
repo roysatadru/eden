@@ -7,11 +7,10 @@ module.exports = {
   content: ['./public/index.html', './src/**/*.{ts,tsx}'],
   theme: {
     screens: {
-      tablet: '40em',
-      'large-tablet': '48em',
-      laptop: '64em',
-      desktop: '80em',
-      'large-desktop': '96em',
+      mobile: '25.9375em',
+      tablet: '37.5em',
+      'xl-desktop': '96em',
+      '2xl-desktop': '112.5em',
     },
 
     colors: {
@@ -59,7 +58,25 @@ module.exports = {
     require('@tailwindcss/forms'),
     plugin(function ({ addVariant, addBase }) {
       addBase({
-        html: { fontSize: '62.5%' },
+        html: {
+          fontSize: '50%',
+
+          '@screen mobile': {
+            fontSize: '57%',
+          },
+
+          '@screen tablet': {
+            fontSize: '62.5%',
+          },
+
+          '@screen xl-desktop': {
+            fontSize: '68%',
+          },
+
+          '@screen 2xl-desktop': {
+            fontSize: '75%',
+          },
+        },
         body: { fontSize: '1.6rem' },
         '*:focus': { outline: 'none' },
       });
