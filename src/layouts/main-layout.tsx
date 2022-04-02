@@ -10,9 +10,9 @@ export function MainLayout(props: MainLayoutProps) {
   const { children } = props;
 
   return (
-    <div className="min-h-screen py-36 flex flex-col items-center">
+    <div className="min-h-screen py-36 flex flex-col items-center justify-center px-8">
       <header>
-        <div className='-ml-8'>
+        <div className="-ml-8">
           <Logo />
         </div>
       </header>
