@@ -11,7 +11,9 @@ export function Stepper(props: StepperProps) {
   const currentStepIndex = steps.findIndex(st => st.value === currentValue);
 
   return (
-    <div className={`w-[35rem] flex items-center justify-between relative`}>
+    <div
+      className={`w-[35rem] flex items-center justify-between relative select-none`}
+    >
       <div
         style={{
           backgroundSize: `${
