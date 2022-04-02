@@ -1,5 +1,5 @@
-function App() {
-  return <div>Hello World!</div>;
-}
+import { Main } from './pages/main';
 
-export default App;
+export function App() {
+  return <Main />;
+}
