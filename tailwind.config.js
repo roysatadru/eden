@@ -17,7 +17,11 @@ module.exports = {
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
-      primary: '#664de5',
+      primary: {
+        DEFAULT: '#664de5',
+        'medium-dark': '#593ee3',
+        dark: '#4d2fe1',
+      },
       white: colors.white,
       gray: {
         100: '#f8f9fc',
@@ -43,6 +47,7 @@ module.exports = {
       addBase({
         html: { fontSize: '62.5%' },
         body: { fontSize: '1.6rem' },
+        '*:focus': { outline: 'none' },
       });
       addVariant('mouse-focus', '&:focus:not(:focus-visible)');
       addVariant('except-last-children', '& > *:not(:last-of-type)');
