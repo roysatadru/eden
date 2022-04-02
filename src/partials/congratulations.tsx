@@ -5,6 +5,9 @@ import { useUserContext } from '../hoc/user-context';
 export function Congratulations() {
   const [user] = useUserContext();
 
+  const nameOfUser = (user.name || 'Eren').split(' ')[0];
+  const displayName = nameOfUser[0].toUpperCase() + nameOfUser.slice(1);
+
   const svgClassName =
     'block stroke-white rounded-full [stroke-miterlimit:10] shadow-[inset_0_0_0_theme(colors.primary.DEFAULT)] animate-[fill_.4s_ease-in-out_.4s_forwards,_scale_.3s_ease-in-out_.9s_both]';
 
@@ -41,7 +44,7 @@ export function Congratulations() {
       </div>
 
       <StepHeader
-        heading={`Congratulations, ${user.name}!`}
+        heading={`Congratulations, ${displayName}!`}
         subHeading="You have completed onboarding, you can start using the Eden!"
       />
     </Fragment>

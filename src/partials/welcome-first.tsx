@@ -19,7 +19,7 @@ export function WelcomeFirst() {
         setUser(cur => ({
           ...cur,
           name: (
-            document.getElementById('username') as HTMLInputElement
+            document.getElementById('name') as HTMLInputElement
           ).value.trim(),
         }));
       }}
