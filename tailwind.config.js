@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const defaultTheme = require('tailwindcss/defaultTheme');
 const colors = require('tailwindcss/colors');
 const plugin = require('tailwindcss/plugin');
@@ -33,18 +34,18 @@ module.exports = {
 
     extend: {
       fontFamily: { sans: ['Inter', ...defaultTheme.fontFamily.sans] },
+      borderRadius: { primary: '0.6rem' },
     },
   },
   plugins: [
-    require('@tailwindcss/forms')({
-      strategy: 'class',
-    }),
+    require('@tailwindcss/forms'),
     plugin(function ({ addVariant, addBase }) {
       addBase({
         html: { fontSize: '62.5%' },
         body: { fontSize: '1.6rem' },
       });
       addVariant('mouse-focus', '&:focus:not(:focus-visible)');
+      addVariant('except-last-children', '& > *:not(:last-of-type)');
     }),
   ],
 };
