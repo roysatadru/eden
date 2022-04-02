@@ -11,9 +11,7 @@ export function Stepper(props: StepperProps) {
   const currentStepIndex = steps.findIndex(st => st.value === currentValue);
 
   return (
-    <div
-      className={`w-[35rem] flex items-center justify-between relative`}
-    >
+    <div className={`w-[35rem] flex items-center justify-between relative`}>
       <div
         style={{
           backgroundSize: `${
@@ -29,7 +27,7 @@ export function Stepper(props: StepperProps) {
         return (
           <div
             key={value}
-            className={`flex relative z-10 items-center justify-center h-16 w-16 rounded-full transition duration-500 ease-in ${
+            className={`flex relative z-10 items-center justify-center h-16 w-16 rounded-full text-2xl leading-none transition duration-500 ease-in ${
               isStepComplete
                 ? 'border-primary text-white bg-primary'
                 : 'bg-white border border-gray-200 text-gray-500'
