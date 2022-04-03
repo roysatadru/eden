@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
+
 import { StepHeader } from '../layouts/step-header';
-import { useUserContext } from '../hoc/user-context';
+import { useUserContext } from '../hooks/use-user-context';
 
 export function Congratulations() {
   const [user] = useUserContext();

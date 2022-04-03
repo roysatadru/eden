@@ -4,7 +4,6 @@ import {
   useState,
   Dispatch,
   SetStateAction,
-  useContext,
 } from 'react';
 
 interface UserContextProviderProps {
@@ -29,8 +28,4 @@ export function UserContextProvider(props: UserContextProviderProps) {
   const user = useState(userInitialState);
 
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
-}
-
-export function useUserContext() {
-  return useContext(UserContext);
 }
