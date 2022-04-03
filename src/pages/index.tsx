@@ -5,7 +5,7 @@ import { StepsContextProvider } from '../hoc/step-context';
 import { AllStepsHeader } from '../partials/all-steps-header';
 import { AllStepsBody } from '../partials/all-steps-body';
 
-export function Main() {
+export function HomePage() {
   return (
     <MainLayout>
       <UserContextProvider>

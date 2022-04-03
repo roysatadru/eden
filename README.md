@@ -61,7 +61,7 @@ A ReactJS project based on [this mockup](https://dribbble.com/shots/15669113-Onb
 - Assets
   - Favicon - Generated using online [Favicon Generator](https://www.favicon-generator.org/)
   - Font - Using Inter which is available as a variable font, but `font-variation-settings` won't be used in this project for primarily two reasons. Firstly, it doesn't yet have [>95% support](https://caniuse.com/variable-fonts) so using it won't work well across devices and secondly Tailwind doesn't have default utility classes for this and for that reason, custom utility classes needs to be created to use this feature. So, using static fonts do seem more practical.
-  - Icons - Snipped out from [the mockup](https://dribbble.com/shots/15669113-Onboarding-Exploration/attachments/7464145?mode=media) and converted into svg using Google Image Search, [Convertio](https://convertio.co/png-svg/), [Boxy SVG](https://boxy-svg.com/) and [SVGOMG](https://jakearchibald.github.io/) and stored in [assets](assets/) folder.
+  - Icons - Snipped out from [the mockup](https://dribbble.com/shots/15669113-Onboarding-Exploration/attachments/7464145?mode=media) and converted into svg using Google Image Search, [Convertio](https://convertio.co/png-svg/), [Boxy SVG](https://boxy-svg.com/) and [SVGOMG](https://jakearchibald.github.io/svgomg/) and stored in [assets](assets/) folder.
 - Colors (Picked from color picker in google chrome dev tools)
   - Primary Color - #664de5
   - White - #fff (primary contrast text, background color)
