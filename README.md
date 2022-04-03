@@ -39,10 +39,10 @@ A ReactJS project based on [this mockup](https://dribbble.com/shots/15669113-Onb
 - [React Hook Form](https://react-hook-form.com/) (for managing form state without hassle)
 - [io-ts](https://gcanti.github.io/io-ts/) (for form input validations)
 - [Framer Motion](https://www.framer.com/motion/) (to apply some cool animations)
-- [React Router DOM](https://reactrouter.com/)
+- ~~[React Router DOM](https://reactrouter.com/)~~ (not using it anymore, replaced its implementations with Context API thus decreasing the project's bundle size)
 
-  - To show two pages (a short guide for the users to help them figure out the features, that are worth looking)
-  - To use [`<MemoryRouter>`](https://reactrouter.com/docs/en/v6/api#memoryrouter) in an interesting way
+  - ~~To show two pages (a short guide for the users to help them figure out the features, that are worth looking)~~ (not worth doing but we can simply show a dialog for showing the user guides)
+  - ~~To use [`<MemoryRouter>`](https://reactrouter.com/docs/en/v6/api#memoryrouter) in an interesting way~~ (removed the implementation in the latest release. But the old implementation can be found in [this release](https://github.com/roysatadru/eden/releases/tag/v1.0.0))
 
     **NOTE**: We can achieve the same thing with useState or useReducer or Context API.
     So why am I using this approach?

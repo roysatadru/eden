@@ -1,19 +1,17 @@
-import { useNavigate } from 'react-router';
-
 import { Button } from '../components/button';
 import { Card } from '../components/card';
 import { Typography } from '../components/typography';
-import { internalRoutes } from '../constants/internal-step-routes';
 import { planToUseEdenOptions } from '../constants/plan-to-use-eden-options';
+import { useStepsContext } from '../hooks/use-steps-context';
 
 export function PlanToUseEden() {
-  const navigate = useNavigate();
+  const [_, setCurrentStep] = useStepsContext();
 
   return (
     <form
       onSubmit={e => {
         e.preventDefault();
-        navigate(internalRoutes.CONGRATULATIONS);
+        setCurrentStep('congratulations');
       }}
     >
       <fieldset name="plan" className="border-0 w-full">

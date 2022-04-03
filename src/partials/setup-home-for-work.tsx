@@ -1,19 +1,18 @@
 import { Fragment } from 'react';
-import { useNavigate } from 'react-router';
 
 import { Button } from '../components/button';
 import { TextField } from '../components/text-field';
-import { internalRoutes } from '../constants/internal-step-routes';
+import { useStepsContext } from '../hooks/use-steps-context';
 import { FormLayout } from '../layouts/form-layout';
 
 export function SetupHomeForWork() {
-  const navigate = useNavigate();
+  const [_, setCurrentStep] = useStepsContext();
 
   return (
     <form
       onSubmit={e => {
         e.preventDefault();
-        navigate(internalRoutes.PLANS);
+        setCurrentStep('plans');
       }}
     >
       <FormLayout>
