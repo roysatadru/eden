@@ -17,7 +17,7 @@ export function MainLayout(props: MainLayoutProps) {
         </div>
       </header>
 
-      <main className="mt-32 flex flex-col">{children}</main>
+      <main className="mt-32 flex flex-col w-full">{children}</main>
     </div>
   );
 }
