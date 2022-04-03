@@ -7,7 +7,8 @@ module.exports = {
   content: ['./public/index.html', './src/**/*.{ts,tsx}'],
   theme: {
     screens: {
-      mobile: '25.9375em',
+      'sm-mobile': '25.5rem',
+      mobile: '28.5em',
       tablet: '37.5em',
       'xl-desktop': '96em',
       '2xl-desktop': '112.5em',
@@ -59,15 +60,15 @@ module.exports = {
     plugin(function ({ addVariant, addBase }) {
       addBase({
         html: {
-          fontSize: '50%',
+          // fontSize: '50%',
 
-          '@screen mobile': {
-            fontSize: '57%',
-          },
+          // '@screen mobile': {
+          // fontSize: '57%',
+          // },
 
-          '@screen tablet': {
-            fontSize: '62.5%',
-          },
+          // '@screen tablet': {
+          fontSize: '62.5%',
+          // },
 
           '@screen xl-desktop': {
             fontSize: '68%',

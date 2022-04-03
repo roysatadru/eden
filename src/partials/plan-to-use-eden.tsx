@@ -17,7 +17,7 @@ export function PlanToUseEden() {
       <fieldset name="plan" className="border-0 w-full">
         <legend className="sr-only">Please select an option</legend>
 
-        <ul className="flex justify-between">
+        <ul className="flex flex-col mobile:flex-row except-last-children:mb-10 mobile:except-last-children:mb-0 justify-between">
           {planToUseEdenOptions.map(function (
             { icon, heading, text, value },
             index,
@@ -38,7 +38,10 @@ export function PlanToUseEden() {
                   className="flex flex-col h-full cursor-pointer select-none text-gray-600 peer-checked:border-primary peer-checked:cursor-auto peer-checked:text-primary peer-checked:-mt-px peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-1"
                 >
                   <div className="flex justify-start mb-12 pl-2">{icon}</div>
-                  <Typography variant="secondary-heading" className="mb-6">
+                  <Typography
+                    variant="secondary-heading"
+                    className="mb-4 mobile:mb-6"
+                  >
                     {heading}
                   </Typography>
                   <Typography variant="secondary-sub-text">{text}</Typography>

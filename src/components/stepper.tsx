@@ -11,16 +11,14 @@ export function Stepper(props: StepperProps) {
   const currentStepIndex = steps.findIndex(st => st.value === currentValue);
 
   return (
-    <div
-      className={`w-[35rem] flex items-center justify-between relative select-none`}
-    >
+    <div className="max-w-[35rem] w-full tablet:w-[35rem] flex items-center justify-between relative select-none">
       <div
         style={{
           backgroundSize: `${
             ((currentStepIndex * 2 + 1) / ((steps.length - 1) * 2)) * 100
           }% 100%`,
         }}
-        className="w-[31rem] h-[0.1rem] absolute top-[1.95rem] left-8 transition-all duration-500 ease-in bg-gray-200 bg-gradient-to-r from-primary to-primary bg-no-repeat z-0"
+        className="w-[calc(100%-4rem)] tablet:w-[31rem] h-[0.1rem] absolute top-[1.95rem] left-8 transition-all duration-500 ease-in bg-gray-200 bg-gradient-to-r from-primary to-primary bg-no-repeat z-0"
       />
 
       {steps.map(function ({ value, label }, index) {
