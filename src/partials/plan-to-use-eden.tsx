@@ -35,7 +35,7 @@ export function PlanToUseEden() {
                 <Card
                   tag="label"
                   htmlFor={value}
-                  className="flex flex-col h-full cursor-pointer text-gray-600 peer-checked:border-primary peer-checked:cursor-auto peer-checked:text-primary peer-checked:-mt-px"
+                  className="flex flex-col h-full cursor-pointer select-none text-gray-600 peer-checked:border-primary peer-checked:cursor-auto peer-checked:text-primary peer-checked:-mt-px peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-1"
                 >
                   <div className="flex justify-start mb-12 pl-2">{icon}</div>
                   <Typography variant="secondary-heading" className="mb-6">
