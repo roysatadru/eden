@@ -1,0 +1,19 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Rishabh Waghwani",
+      "username": "rish"
+    },
+    {
+      "id": 2,
+      "name": "Anubhav",
+      "username": "anub"
+    },
+    {
+      "id": 3,
+      "name": "Satadru Roy",
+      "username": "sata"
+    }
+  ]
+}

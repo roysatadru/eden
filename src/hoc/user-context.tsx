@@ -10,7 +10,7 @@ interface UserContextProviderProps {
   children: ReactNode;
 }
 
-const userInitialState = { name: '' };
+const userInitialState = { name: '', username: '' };
 const initialState = [
   userInitialState,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
