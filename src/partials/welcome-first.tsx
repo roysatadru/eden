@@ -1,21 +1,18 @@
-import { useNavigate } from 'react-router';
-
 import { Button } from '../components/button';
 import { TextField } from '../components/text-field';
-import { internalRoutes } from '../constants/internal-step-routes';
-import { useUserContext } from '../hoc/user-context';
+import { useStepsContext } from '../hooks/use-steps-context';
+import { useUserContext } from '../hooks/use-user-context';
 import { FormLayout } from '../layouts/form-layout';
 
 export function WelcomeFirst() {
-  const navigate = useNavigate();
-
-  const [_, setUser] = useUserContext();
+  const [_, setCurrentStep] = useStepsContext();
+  const [_1, setUser] = useUserContext();
 
   return (
     <form
       onSubmit={e => {
         e.preventDefault();
-        navigate(internalRoutes.WORK_DETAILS);
+        setCurrentStep('workDetails');
         setUser(cur => ({
           ...cur,
           name: (
