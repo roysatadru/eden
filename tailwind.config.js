@@ -23,6 +23,7 @@ module.exports = {
         dark: '#4d2fe1',
       },
       white: colors.white,
+      error: colors.red,
       gray: {
         100: '#f8f9fc',
         200: '#eaeef5',
@@ -39,6 +40,9 @@ module.exports = {
     extend: {
       fontFamily: { sans: ['Inter', ...defaultTheme.fontFamily.sans] },
       borderRadius: { primary: '0.6rem' },
+      animation: {
+        'hourglass-primary': 'hourglass 1.2s infinite',
+      },
       keyframes: ({ theme }) => ({
         stroke: {
           '100%': { 'stroke-dashoffset': '0' },
@@ -50,6 +54,20 @@ module.exports = {
         fill: {
           '100%': {
             boxShadow: `inset 0 0 0 5rem ${theme('colors.primary.DEFAULT')}`,
+          },
+        },
+        hourglass: {
+          '0%': {
+            transform: 'rotate(0)',
+            'animation-timing-function':
+              'cubic-bezier(0.55, 0.055, 0.675, 0.19)',
+          },
+          '50%': {
+            transform: 'rotate(900deg)',
+            'animation-timing-function': 'cubic-bezier(0.215, 0.61, 0.355, 1)',
+          },
+          '100%': {
+            transform: 'rotate(1800deg)',
           },
         },
       }),

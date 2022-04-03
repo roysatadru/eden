@@ -37,7 +37,8 @@ A ReactJS project based on [this mockup](https://dribbble.com/shots/15669113-Onb
 - [Tailwind CSS](https://tailwindcss.com/) (it will be fun to use it for the first time)
 - [Tailwind CSS Forms](https://tailwindcss-forms.vercel.app/) (to get a basic reset for form styles)
 - [React Hook Form](https://react-hook-form.com/) (for managing form state without hassle)
-- [io-ts](https://gcanti.github.io/io-ts/) (for form input validations)
+- ~~[io-ts](https://gcanti.github.io/io-ts/) (for form input validations)~~ (replaced it with yup which is better for async validations)
+- [Yup](https://github.com/jquense/yup) (for form input validations)
 - [Framer Motion](https://www.framer.com/motion/) (to apply some cool animations)
 - ~~[React Router DOM](https://reactrouter.com/)~~ (not using it anymore, replaced its implementations with Context API thus decreasing the project's bundle size)
 
