@@ -17,7 +17,7 @@ export function Typography(props: TypographyProps) {
     case 'primary-heading':
       return (
         <h1
-          className={`font-bold text-gray-800 text-4xl tablet:text-5xl tablet:leading-none ${className}`}
+          className={`font-bold text-gray-800 text-[1.75rem] sm-mobile:text-[2rem] mobile:text-4xl tablet:text-5xl tablet:leading-none ${className}`}
         >
           {children}
         </h1>
@@ -25,21 +25,29 @@ export function Typography(props: TypographyProps) {
 
     case 'secondary-heading':
       return (
-        <h2 className={`font-bold text-gray-700 leading-none ${className}`}>
+        <h2
+          className={`text-[1.4rem] mobile:text-[1.6rem] font-bold text-gray-700 leading-none ${className}`}
+        >
           {children}
         </h2>
       );
 
     case 'primary-sub-heading':
       return (
-        <p className={`text-gray-400 tablet:leading-none ${className}`}>
+        <p
+          className={`text-[1.3rem] sm-mobile:text-[1.5rem] tablet:text-[1.6rem] text-gray-400 tablet:leading-none ${className}`}
+        >
           {children}
         </p>
       );
 
     case 'secondary-sub-text':
       return (
-        <p className={`text-gray-400 text-[1.4rem] ${className}`}>{children}</p>
+        <p
+          className={`text-gray-400 text-[1.3rem] mobile:text-[1.4rem] ${className}`}
+        >
+          {children}
+        </p>
       );
 
     default:
