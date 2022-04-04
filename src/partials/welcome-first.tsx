@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { object, string } from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,13 +8,8 @@ import { TextField } from '../components/text-field';
 import { useStepsContext } from '../hooks/use-steps-context';
 import { useUserContext } from '../hooks/use-user-context';
 import { FormLayout } from '../layouts/form-layout';
-import { debounce } from '../utils/debounce';
 import { promisifiedSetTimeout } from '../utils/promisified-set-timeout';
 import { RingLoader } from '../components/ring-loader';
-
-let setIsUsernameValidatingGlobal = null as null | Dispatch<
-  SetStateAction<boolean>
->;
 
 const initialValues = {
   name: '',
@@ -27,12 +22,16 @@ export function WelcomeFirst() {
 
   const [isUsernameValidating, setIsUsernameValidating] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [cachedUsernameValidations, setCachedUsernameValidations] = useState(
+    {} as { [username: string]: boolean },
+  );
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
+    setFocus,
   } = useForm({
     mode: 'onSubmit',
     reValidateMode: 'onChange',
@@ -40,13 +39,67 @@ export function WelcomeFirst() {
     resolver: yupResolver(validationSchema),
   });
 
-  useEffect(function () {
-    setIsUsernameValidatingGlobal = setIsUsernameValidating;
-  }, []);
-
   const username = watch('username');
 
+  // normally, this shouldn't be done... but for this example, it's ok
+  // we should use a real API and backend to check if the username is taken
+  const checkUserName = useCallback(
+    async function checkUserName() {
+      try {
+        const response = await fetch('/api/is-user-available.json');
+        await promisifiedSetTimeout(2000);
+
+        const json = (await response.json()) as {
+          users?: { id?: number; name?: string; username?: string }[];
+        } | null;
+
+        setCachedUsernameValidations(cur => ({
+          ...cur,
+          [username.toLowerCase()]: !(
+            json?.users?.every?.(
+              user =>
+                user?.username?.toLowerCase?.() !== username.toLowerCase(),
+            ) ?? false
+          ),
+        }));
+      } catch (error) {
+        // TODO: show error toast
+      } finally {
+        setIsUsernameValidating(false);
+      }
+    },
+    [username],
+  );
+
+  useEffect(
+    function () {
+      if (username) {
+        setIsUsernameValidating(true);
+
+        if (
+          typeof cachedUsernameValidations[username.toLowerCase()] === 'boolean'
+        ) {
+          setIsUsernameValidating(false);
+          return;
+        }
+
+        const timeout = setTimeout(checkUserName, 500);
+
+        return () => clearTimeout(timeout);
+      } else {
+        setIsUsernameValidating(false);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [checkUserName, username],
+  );
+
   const onSubmit = handleSubmit(async function ({ name, username }) {
+    if (cachedUsernameValidations[username.toLowerCase()]) {
+      setFocus('username');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -96,8 +149,10 @@ export function WelcomeFirst() {
           {...register('username')}
           disabled={loading}
           error={
-            errors.username?.message?.replace?.(/{username}/g, username) ??
-            false
+            errors.username?.message ??
+            (cachedUsernameValidations[username.toLowerCase()]
+              ? `${username} is already taken`
+              : false)
           }
           helperText={
             isUsernameValidating ? (
@@ -112,14 +167,13 @@ export function WelcomeFirst() {
         <Button
           className="w-full mt-10"
           label="Create Workspace"
+          {...(isUsernameValidating ? { disabled: true } : {})}
           loading={loading}
         />
       </FormLayout>
     </form>
   );
 }
-
-const cachedUsernameValidations = {} as { [username: string]: boolean };
 
 const validationSchema = object().shape({
   name: string()
@@ -134,50 +188,7 @@ const validationSchema = object().shape({
     .required('Display Name is required')
     .matches(/^[a-zA-Z0-9_]+$/, {
       message:
-        'Special chracters(except underscores) and spaces are not allowed',
+        'Special characters(except underscores) and spaces are not allowed',
       excludeEmptyString: true,
-    })
-    .test(
-      'wrong',
-      '{username} is already taken',
-      debounce(
-        async function (username: string) {
-          try {
-            // normally, this shouldn't be done... but for this example, it's ok
-            // we should use a real API and backend to check if the username is taken
-
-            if (
-              typeof cachedUsernameValidations[username.toLowerCase()] ===
-              'boolean'
-            ) {
-              setIsUsernameValidatingGlobal?.(false);
-              return cachedUsernameValidations[username.toLowerCase()];
-            }
-
-            const response = await fetch('/api/is-user-available.json');
-            await promisifiedSetTimeout(2000);
-
-            const json = (await response.json()) as {
-              users?: { id?: number; name?: string; username?: string }[];
-            } | null;
-
-            cachedUsernameValidations[username.toLowerCase()] =
-              json?.users?.every?.(
-                user =>
-                  user?.username?.toLowerCase?.() !== username.toLowerCase(),
-              ) ?? false;
-
-            setIsUsernameValidatingGlobal?.(false);
-            return cachedUsernameValidations[username.toLowerCase()];
-          } catch (error) {
-            setIsUsernameValidatingGlobal?.(false);
-            return false;
-          }
-        },
-        300,
-        function () {
-          setIsUsernameValidatingGlobal?.(true);
-        },
-      ),
-    ),
+    }),
 });
