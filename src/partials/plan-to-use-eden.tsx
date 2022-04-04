@@ -5,10 +5,12 @@ import { Card } from '../components/card';
 import { Typography } from '../components/typography';
 import { planToUseEdenOptions } from '../constants/plan-to-use-eden-options';
 import { useStepsContext } from '../hooks/use-steps-context';
+import { useUserContext } from '../hooks/use-user-context';
 import { promisifiedSetTimeout } from '../utils/promisified-set-timeout';
 
 export function PlanToUseEden() {
   const [_, setCurrentStep] = useStepsContext();
+  const [_1, setUser] = useUserContext();
 
   const [loading, setLoading] = useState(false);
 
@@ -30,6 +32,11 @@ export function PlanToUseEden() {
 
         if (json?.message === 'Success') {
           setCurrentStep('congratulations');
+
+          setUser(cur => ({
+            ...cur,
+            selectedPlan: eventTargetSelected.value,
+          }));
         } else {
           throw new Error('Something went wrong! Please try again later...');
         }
@@ -38,7 +45,6 @@ export function PlanToUseEden() {
         // TODO: show error toast
         // console.error(error);
       }
-      // console.log(eventTargetSelected.value);
     }
   }
 
@@ -61,11 +67,12 @@ export function PlanToUseEden() {
                   value={value}
                   defaultChecked={index === 0}
                   className="sr-only peer"
+                  disabled={loading}
                 />
                 <Card
                   tag="label"
                   htmlFor={value}
-                  className="flex flex-col h-full cursor-pointer select-none text-gray-600 peer-checked:border-primary peer-checked:cursor-auto peer-checked:text-primary peer-checked:-mt-px peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-1"
+                  className="flex flex-col h-full cursor-pointer select-none text-gray-600 peer-disabled:cursor-auto peer-checked:border-primary peer-checked:cursor-auto peer-checked:text-primary peer-checked:-mt-px peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-1"
                 >
                   <div className="flex justify-start mb-12 pl-2">{icon}</div>
                   <Typography
@@ -85,7 +92,7 @@ export function PlanToUseEden() {
       <Button
         className="w-full mt-10"
         label="Create Workspace"
-        loading={loading}
+        loading={loading ? 'Creating workspace...' : false}
       />
     </form>
   );
