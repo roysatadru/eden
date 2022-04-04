@@ -23,7 +23,7 @@ const initialValues = {
 
 function validateUserNameSchema(input: string) {
   return !input.match(/^[a-zA-Z0-9_]+$/) && input.trim() !== ''
-    ? 'Username can only contain letters, numbers and underscores'
+    ? 'Display Name can only contain letters, numbers and underscores'
     : null;
 }
 
@@ -161,8 +161,9 @@ export function WelcomeFirst() {
             .trim()
             .split(' ')
             .reduce(function (acc, cur) {
-              return acc + cur.trim();
-            }, ''),
+              return acc + cur.trim() + ' ';
+            }, '')
+            .trim(),
           username: username.trim(),
         }));
       } else {
@@ -211,7 +212,7 @@ export function WelcomeFirst() {
           className="w-full mt-10"
           label="Create Workspace"
           {...(isUserNameValidating ? { disabled: true } : {})}
-          loading={loading}
+          loading={loading ? 'Creating workspace...' : false}
         />
       </FormLayout>
     </form>

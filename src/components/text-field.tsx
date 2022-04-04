@@ -34,14 +34,14 @@ function TextFieldForRef(props: TextFieldProps, ref: Ref<HTMLInputElement>) {
       id={id}
       type="text"
       {...inputProps}
-      className={`h-[4.5rem] text-[length:inherit] placeholder:text-gray-300 ${
+      className={`h-[4.5rem] text-[length:inherit] placeholder:text-gray-300 disabled:bg-gray-200 disabled:text-gray-400 ${
         !startAdornment
           ? `border-[0.1rem] rounded-primary px-7 focus:ring-2 focus:ring-offset-1 transition duration-200 ${
               error
                 ? 'border-error-400 hover:border-error-500 focus:border-error-600 focus:ring-error-600'
-                : 'border-gray-200 hover:border-gray-300 focus:border-primary focus:ring-primary disabled:bg-gray-200 disabled:text-gray-300 disabled:border-gray-200'
+                : 'border-gray-200 hover:border-gray-300 focus:border-primary focus:ring-primary disabled:border-gray-200'
             }`
-          : 'order-1 !border-0 !border-transparent !ring-0 !ring-transparent rounded-l-primary px-[1.55rem] peer flex-grow'
+          : 'order-1 !border-0 !border-transparent !ring-0 !ring-transparent rounded-r-primary px-[1.55rem] peer flex-grow'
       } ${inputProps?.className ?? ''}`}
     />
   );
@@ -73,7 +73,7 @@ function TextFieldForRef(props: TextFieldProps, ref: Ref<HTMLInputElement>) {
             className={`absolute top-0 left-0 bottom-0 right-0 pointer-events-none border-[0.1rem] rounded-primary peer-focus:ring-2 peer-focus:ring-offset-1 transition duration-200 ${
               error
                 ? 'border-error-400 peer-hover:border-error-500 peer-focus:border-error-600 peer-focus:ring-error-600'
-                : 'border-gray-200 peer-hover:border-gray-300 peer-focus:border-primary peer-focus:ring-primary peer-disabled:bg-gray-200 peer-disabled:text-gray-300 peer-disabled:border-gray-200'
+                : 'border-gray-200 peer-hover:border-gray-300 peer-focus:border-primary peer-focus:ring-primary peer-disabled:text-gray-300 peer-disabled:border-gray-200'
             }`}
           />
         </div>

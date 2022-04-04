@@ -78,15 +78,7 @@ module.exports = {
     plugin(function ({ addVariant, addBase }) {
       addBase({
         html: {
-          // fontSize: '50%',
-
-          // '@screen mobile': {
-          // fontSize: '57%',
-          // },
-
-          // '@screen tablet': {
           fontSize: '62.5%',
-          // },
 
           '@screen xl-desktop': {
             fontSize: '68%',
