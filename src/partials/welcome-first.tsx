@@ -10,21 +10,32 @@ import { useUserContext } from '../hooks/use-user-context';
 import { FormLayout } from '../layouts/form-layout';
 import { promisifiedSetTimeout } from '../utils/promisified-set-timeout';
 import { RingLoader } from '../components/ring-loader';
+import { useCacheValidations } from '../hooks/use-cache-validations';
+
+const initialCachedValidationsState = {
+  '': { fetching: false, results: false },
+};
 
 const initialValues = {
   name: '',
   username: '',
 };
 
+function validateUserNameSchema(input: string) {
+  return !input.match(/^[a-zA-Z0-9_]+$/) && input.trim() !== ''
+    ? 'Username can only contain letters, numbers and underscores'
+    : null;
+}
+
 export function WelcomeFirst() {
   const [_, setCurrentStep] = useStepsContext();
   const [_1, setUser] = useUserContext();
 
-  const [isUsernameValidating, setIsUsernameValidating] = useState(false);
+  const { cachedValidations, dispatchCachedValidations } = useCacheValidations({
+    initialCachedValidationsState,
+  });
+
   const [loading, setLoading] = useState(false);
-  const [cachedUsernameValidations, setCachedUsernameValidations] = useState(
-    {} as { [username: string]: boolean },
-  );
 
   const {
     register,
@@ -40,11 +51,16 @@ export function WelcomeFirst() {
   });
 
   const username = watch('username');
+  const isUserNameValidating =
+    cachedValidations[username.toLowerCase()]?.fetching ?? false;
+  const isUserNameNotAvailable =
+    cachedValidations[username.toLowerCase()]?.results ?? false;
 
-  // normally, this shouldn't be done... but for this example, it's ok
-  // we should use a real API and backend to check if the username is taken
+  /* normally, this shouldn't be done... but for this example, it's ok
+   we should use a real API and backend to check if the username is taken */
+
   const checkUserName = useCallback(
-    async function checkUserName() {
+    async function checkUserName(username) {
       try {
         const response = await fetch('/api/is-user-available.json');
         await promisifiedSetTimeout(2000);
@@ -53,41 +69,69 @@ export function WelcomeFirst() {
           users?: { id?: number; name?: string; username?: string }[];
         } | null;
 
-        setCachedUsernameValidations(cur => ({
-          ...cur,
-          [username.toLowerCase()]: !(
+        return dispatchCachedValidations({
+          type: 'set-result',
+          key: username.toLowerCase(),
+          result: !(
             json?.users?.every?.(
               user =>
                 user?.username?.toLowerCase?.() !== username.toLowerCase(),
             ) ?? false
           ),
-        }));
+        });
       } catch (error) {
         // TODO: show error toast
-      } finally {
-        setIsUsernameValidating(false);
+        dispatchCachedValidations({
+          type: 'stop-fetching',
+          key: username.toLowerCase(),
+        });
       }
     },
-    [username],
+    [dispatchCachedValidations],
   );
+
+  useEffect(() => {
+    setFocus('name');
+  }, [setFocus]);
 
   useEffect(
     function () {
       if (username) {
-        setIsUsernameValidating(true);
+        dispatchCachedValidations({
+          type: 'start-fetching',
+          key: username.toLowerCase(),
+        });
+
+        const errorMessage = validateUserNameSchema(username);
+
+        if (errorMessage) {
+          dispatchCachedValidations({
+            type: 'set-result',
+            key: username.toLowerCase(),
+            result: false,
+          });
+        }
 
         if (
-          typeof cachedUsernameValidations[username.toLowerCase()] === 'boolean'
+          typeof cachedValidations[username.toLowerCase()]?.results ===
+          'boolean'
         ) {
-          setIsUsernameValidating(false);
+          dispatchCachedValidations({
+            type: 'stop-fetching',
+            key: username.toLowerCase(),
+          });
           return;
         }
 
-        const timeout = setTimeout(checkUserName, 500);
+        const timeout = setTimeout(() => checkUserName(username), 500);
 
-        return () => clearTimeout(timeout);
-      } else {
-        setIsUsernameValidating(false);
+        return () => {
+          dispatchCachedValidations({
+            type: 'stop-fetching',
+            key: username.toLowerCase(),
+          });
+          clearTimeout(timeout);
+        };
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -95,7 +139,7 @@ export function WelcomeFirst() {
   );
 
   const onSubmit = handleSubmit(async function ({ name, username }) {
-    if (cachedUsernameValidations[username.toLowerCase()]) {
+    if (cachedValidations[username.toLowerCase()]?.results) {
       setFocus('username');
       return;
     }
@@ -139,7 +183,7 @@ export function WelcomeFirst() {
           placeholder="Steve Jobs"
           label="Full Name"
           {...register('name')}
-          disabled={loading || isUsernameValidating}
+          disabled={loading || isUserNameValidating}
           error={errors.name?.message ?? false}
         />
         <TextField
@@ -150,12 +194,11 @@ export function WelcomeFirst() {
           disabled={loading}
           error={
             errors.username?.message ??
-            (cachedUsernameValidations[username.toLowerCase()]
-              ? `${username} is already taken`
-              : false)
+            validateUserNameSchema(username) ??
+            (isUserNameNotAvailable ? `${username} is already taken` : false)
           }
           helperText={
-            isUsernameValidating ? (
+            isUserNameValidating ? (
               <div className="flex text-[1.3rem] mt-2 text-current">
                 <RingLoader loading className="text-[2rem] mr-3" />
                 Validating display name...
@@ -167,7 +210,7 @@ export function WelcomeFirst() {
         <Button
           className="w-full mt-10"
           label="Create Workspace"
-          {...(isUsernameValidating ? { disabled: true } : {})}
+          {...(isUserNameValidating ? { disabled: true } : {})}
           loading={loading}
         />
       </FormLayout>
@@ -183,12 +226,5 @@ const validationSchema = object().shape({
       message: 'Only alphabets are allowed',
       excludeEmptyString: true,
     }),
-  username: string()
-    .trim()
-    .required('Display Name is required')
-    .matches(/^[a-zA-Z0-9_]+$/, {
-      message:
-        'Special characters(except underscores) and spaces are not allowed',
-      excludeEmptyString: true,
-    }),
+  username: string().trim().required('Display Name is required'),
 });

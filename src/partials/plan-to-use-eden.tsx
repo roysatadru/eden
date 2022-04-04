@@ -1,19 +1,49 @@
+import { FormEvent, useState } from 'react';
+
 import { Button } from '../components/button';
 import { Card } from '../components/card';
 import { Typography } from '../components/typography';
 import { planToUseEdenOptions } from '../constants/plan-to-use-eden-options';
 import { useStepsContext } from '../hooks/use-steps-context';
+import { promisifiedSetTimeout } from '../utils/promisified-set-timeout';
 
 export function PlanToUseEden() {
   const [_, setCurrentStep] = useStepsContext();
 
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const eventTargetSelected = (
+      event.target as HTMLFormElement | undefined
+    )?.querySelector?.('input:checked') as HTMLInputElement | null;
+
+    if (eventTargetSelected) {
+      setLoading(true);
+
+      try {
+        const response = await fetch('/api/typical-success-response.json');
+        await promisifiedSetTimeout(2000);
+
+        const json = (await response.json()) as { message?: string } | null;
+
+        if (json?.message === 'Success') {
+          setCurrentStep('congratulations');
+        } else {
+          throw new Error('Something went wrong! Please try again later...');
+        }
+      } catch (error) {
+        setLoading(false);
+        // TODO: show error toast
+        // console.error(error);
+      }
+      // console.log(eventTargetSelected.value);
+    }
+  }
+
   return (
-    <form
-      onSubmit={e => {
-        e.preventDefault();
-        setCurrentStep('congratulations');
-      }}
-    >
+    <form name="plan" onSubmit={handleSubmit}>
       <fieldset name="plan" className="border-0 w-full">
         <legend className="sr-only">Please select an option</legend>
 
@@ -52,7 +82,11 @@ export function PlanToUseEden() {
         </ul>
       </fieldset>
 
-      <Button className="w-full mt-10">Create Workspace</Button>
+      <Button
+        className="w-full mt-10"
+        label="Create Workspace"
+        loading={loading}
+      />
     </form>
   );
 }
