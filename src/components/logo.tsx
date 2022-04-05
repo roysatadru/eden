@@ -2,7 +2,7 @@ export function Logo() {
   return (
     <a
       href="/"
-      className={`flex items-center justify-between w-44 h-12 mx-auto`}
+      className="flex items-center justify-between w-44 h-12 mx-auto hover:opacity-80 active:opacity-95 transition duration-300 focus:ring-2 focus:ring-primary focus:ring-offset-4 rounded-sm mouse-focus:ring-transparent mouse-focus:ring-0"
     >
       <svg
         className="block w-12 h-full flex-shrink-0 fill-primary"
