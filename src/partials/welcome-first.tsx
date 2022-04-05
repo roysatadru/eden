@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { object, string } from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -10,30 +10,16 @@ import { useUserContext } from '../hooks/use-user-context';
 import { FormLayout } from '../layouts/form-layout';
 import { promisifiedSetTimeout } from '../utils/promisified-set-timeout';
 import { RingLoader } from '../components/ring-loader';
-import { useCacheValidations } from '../hooks/use-cache-validations';
-
-const initialCachedValidationsState = {
-  '': { fetching: false, results: false },
-};
+import { useValidateUsername } from '../hooks/use-validate-username';
 
 const initialValues = {
   name: '',
   username: '',
 };
 
-function validateUserNameSchema(input: string) {
-  return !input.match(/^[a-zA-Z0-9_]+$/) && input.trim() !== ''
-    ? 'Display Name can only contain letters, numbers and underscores'
-    : null;
-}
-
 export function WelcomeFirst() {
   const [_, setCurrentStep] = useStepsContext();
   const [_1, setUser] = useUserContext();
-
-  const { cachedValidations, dispatchCachedValidations } = useCacheValidations({
-    initialCachedValidationsState,
-  });
 
   const [loading, setLoading] = useState(false);
 
@@ -51,95 +37,16 @@ export function WelcomeFirst() {
   });
 
   const username = watch('username');
-  const isUserNameValidating =
-    cachedValidations[username.toLowerCase()]?.fetching ?? false;
-  const isUserNameNotAvailable =
-    cachedValidations[username.toLowerCase()]?.results ?? false;
 
-  /* normally, this shouldn't be done... but for this example, it's ok
-   we should use a real API and backend to check if the username is taken */
-
-  const checkUserName = useCallback(
-    async function checkUserName(username) {
-      try {
-        const response = await fetch('/api/is-user-available.json');
-        await promisifiedSetTimeout(2000);
-
-        const json = (await response.json()) as {
-          users?: { id?: number; name?: string; username?: string }[];
-        } | null;
-
-        return dispatchCachedValidations({
-          type: 'set-result',
-          key: username.toLowerCase(),
-          result: !(
-            json?.users?.every?.(
-              user =>
-                user?.username?.toLowerCase?.() !== username.toLowerCase(),
-            ) ?? false
-          ),
-        });
-      } catch (error) {
-        // TODO: show error toast
-        dispatchCachedValidations({
-          type: 'stop-fetching',
-          key: username.toLowerCase(),
-        });
-      }
-    },
-    [dispatchCachedValidations],
-  );
+  const { usernameErrorMessage, isUsernameValidating, isUsernameValid } =
+    useValidateUsername(username);
 
   useEffect(() => {
     setFocus('name');
   }, [setFocus]);
 
-  useEffect(
-    function () {
-      if (username) {
-        dispatchCachedValidations({
-          type: 'start-fetching',
-          key: username.toLowerCase(),
-        });
-
-        const errorMessage = validateUserNameSchema(username);
-
-        if (errorMessage) {
-          dispatchCachedValidations({
-            type: 'set-result',
-            key: username.toLowerCase(),
-            result: false,
-          });
-        }
-
-        if (
-          typeof cachedValidations[username.toLowerCase()]?.results ===
-          'boolean'
-        ) {
-          dispatchCachedValidations({
-            type: 'stop-fetching',
-            key: username.toLowerCase(),
-          });
-          return;
-        }
-
-        const timeout = setTimeout(() => checkUserName(username), 500);
-
-        return () => {
-          dispatchCachedValidations({
-            type: 'stop-fetching',
-            key: username.toLowerCase(),
-          });
-          clearTimeout(timeout);
-        };
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [checkUserName, username],
-  );
-
   const onSubmit = handleSubmit(async function ({ name, username }) {
-    if (cachedValidations[username.toLowerCase()]?.results) {
+    if (!isUsernameValid(username)) {
       setFocus('username');
       return;
     }
@@ -184,7 +91,7 @@ export function WelcomeFirst() {
           placeholder="Steve Jobs"
           label="Full Name"
           {...register('name')}
-          disabled={loading || isUserNameValidating}
+          disabled={loading}
           error={errors.name?.message ?? false}
         />
         <TextField
@@ -193,13 +100,9 @@ export function WelcomeFirst() {
           label="Display Name"
           {...register('username')}
           disabled={loading}
-          error={
-            errors.username?.message ??
-            validateUserNameSchema(username) ??
-            (isUserNameNotAvailable ? `${username} is already taken` : false)
-          }
+          error={errors.username?.message ?? usernameErrorMessage ?? false}
           helperText={
-            isUserNameValidating ? (
+            isUsernameValidating ? (
               <div className="flex text-[1.3rem] mt-2 text-current">
                 <RingLoader loading className="text-[2rem] mr-3" />
                 Validating display name...
@@ -211,7 +114,6 @@ export function WelcomeFirst() {
         <Button
           className="w-full mt-10"
           label="Create Workspace"
-          {...(isUserNameValidating ? { disabled: true } : {})}
           loading={loading ? 'Creating workspace...' : false}
         />
       </FormLayout>

@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 
 import { Button } from '../components/button';
 import { Card } from '../components/card';
@@ -12,7 +12,15 @@ export function PlanToUseEden() {
   const [_, setCurrentStep] = useStepsContext();
   const [_1, setUser] = useUserContext();
 
+  const firstOptionRef = useRef<HTMLInputElement>(null);
+
   const [loading, setLoading] = useState(false);
+
+  useEffect(function () {
+    if (firstOptionRef.current) {
+      firstOptionRef.current.focus();
+    }
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -61,6 +69,7 @@ export function PlanToUseEden() {
             return (
               <li key={value} className="basis-[calc(50%-1.5rem)]">
                 <input
+                  ref={index === 0 ? firstOptionRef : undefined}
                   type="radio"
                   name="plan"
                   id={value}

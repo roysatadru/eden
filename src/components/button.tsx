@@ -1,4 +1,10 @@
-import { ButtonHTMLAttributes, Fragment, ReactNode } from 'react';
+import {
+  ButtonHTMLAttributes,
+  forwardRef,
+  Fragment,
+  ReactNode,
+  Ref,
+} from 'react';
 
 import { RingLoader } from './ring-loader';
 
@@ -11,11 +17,12 @@ type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
     | { children: ReactNode }
   );
 
-export function Button(props: ButtonProps) {
+function ButtonForRef(props: ButtonProps, ref: Ref<HTMLButtonElement>) {
   const { className = '', loading = false, ...rest } = props;
 
   return (
     <button
+      ref={ref}
       disabled={!!loading}
       title={
         typeof loading === 'string'
@@ -38,3 +45,5 @@ export function Button(props: ButtonProps) {
     </button>
   );
 }
+
+export const Button = forwardRef(ButtonForRef);

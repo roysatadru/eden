@@ -10,6 +10,7 @@ import { useStepsContext } from '../hooks/use-steps-context';
 import { FormLayout } from '../layouts/form-layout';
 import { promisifiedSetTimeout } from '../utils/promisified-set-timeout';
 import { useUserContext } from '../hooks/use-user-context';
+import { fetchURLValidate } from '../api/fetch-url-validate';
 
 const cachedUrlNotAvailable = [] as string[];
 
@@ -49,34 +50,22 @@ export function SetupHomeForWork() {
 
     try {
       if (workspaceUrlSlug.trim()) {
-        /* normally, this shouldn't be done... but for this example, it's ok
-        we should use a real API and backend to check if the username is taken */
+        const urlValidationMessage = await fetchURLValidate(workspaceUrlSlug);
 
-        const urlResponse = await fetch('/api/is-url-available.json');
-        await promisifiedSetTimeout(2000);
-
-        const urlJson = (await urlResponse.json()) as {
-          urls?: { slug?: string }[];
-        } | null;
-
-        if (
-          urlJson?.urls?.find?.(
-            url =>
-              url?.slug?.toLowerCase?.() ===
-              workspaceUrlSlug.trim().toLowerCase(),
-          )
-        ) {
+        if (urlValidationMessage) {
           flushSync(() => {
             setLoading(false);
           });
 
-          cachedUrlNotAvailable.push(workspaceUrlSlug.trim().toLowerCase());
+          if (urlValidationMessage !== "Couldn't validate the URL") {
+            cachedUrlNotAvailable.push(workspaceUrlSlug.trim());
+          }
 
           return setError(
             'workspaceUrlSlug',
             {
               type: 'not-unique',
-              message: 'This URL is already taken',
+              message: urlValidationMessage,
             },
             { shouldFocus: true },
           );
