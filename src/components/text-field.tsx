@@ -41,7 +41,7 @@ function TextFieldForRef(props: TextFieldProps, ref: Ref<HTMLInputElement>) {
                 ? 'border-error-400 hover:border-error-500 focus:border-error-600 focus:ring-error-600'
                 : 'border-gray-200 hover:border-gray-300 focus:border-primary focus:ring-primary disabled:border-gray-200'
             }`
-          : 'order-1 !border-0 !border-transparent !ring-0 !ring-transparent rounded-r-primary px-[1.55rem] peer flex-grow'
+          : 'order-1 !border-0 !border-transparent !ring-0 !ring-transparent rounded-r-primary px-[1.55rem] peer flex-grow w-full'
       } ${inputProps?.className ?? ''}`}
     />
   );
