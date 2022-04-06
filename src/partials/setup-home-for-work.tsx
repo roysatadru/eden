@@ -134,15 +134,15 @@ export function SetupHomeForWork() {
 const validationSchema = object().shape({
   workspaceName: string()
     .trim()
-    .required('Workspace Name is required')
+    .required('Required field')
     .matches(/^[a-zA-Z0-9]+$/, {
-      message: 'Workspace Name can only contain letters and numbers',
+      message: 'Must only contain letters and numbers',
       excludeEmptyString: true,
     }),
   workspaceUrlSlug: string()
     .trim()
     .matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
-      message: 'Invalid Workspace URL',
+      message: 'Invalid URL!',
       excludeEmptyString: true,
     })
     .test('not-unique', 'This URL is already taken', function (urlSlug) {

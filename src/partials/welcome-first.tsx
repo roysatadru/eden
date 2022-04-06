@@ -124,10 +124,10 @@ export function WelcomeFirst() {
 const validationSchema = object().shape({
   name: string()
     .trim()
-    .required('Full Name is required')
+    .required('Required field')
     .matches(/^[a-zA-Z ]+$/, {
-      message: 'Only alphabets are allowed',
+      message: 'Must only contain letters, numbers and underscores',
       excludeEmptyString: true,
     }),
-  username: string().trim().required('Display Name is required'),
+  username: string().trim().required('Required field'),
 });

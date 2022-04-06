@@ -24,17 +24,18 @@ export function useValidateUsername(username: string) {
           completeValidationsMessagesRef.current.find(
             ({ inputValue, validationMessage }) =>
               inputValue.toLowerCase() === trimmedUsername.toLowerCase() &&
-              validationMessage !== "Couldn't validate username",
+              validationMessage !== "Couldn't validate!",
           )
         ) {
           return;
         }
 
         if (!trimmedUsername.match(/^[a-zA-Z0-9_]+$/)) {
+          setNotLoadingInputValidations(cur => [...cur, trimmedUsername]);
           completeValidationsMessagesRef.current.push({
             inputValue: trimmedUsername,
             validationMessage:
-              'Display Name can only contain letters, numbers and underscores',
+              'Must only contain letters, numbers and underscores',
           });
 
           return;
