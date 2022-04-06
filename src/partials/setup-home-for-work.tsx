@@ -11,8 +11,9 @@ import { FormLayout } from '../layouts/form-layout';
 import { promisifiedSetTimeout } from '../utils/promisified-set-timeout';
 import { useUserContext } from '../hooks/use-user-context';
 import { fetchURLValidate } from '../api/fetch-url-validate';
+import { useValidateInput } from '../hooks/use-validate-input';
 
-const cachedUrlNotAvailable = [] as string[];
+const cachedUrlValidations = new Map<string, string>();
 
 const initialValues = {
   workspaceName: '',
@@ -38,9 +39,18 @@ export function SetupHomeForWork() {
     resolver: yupResolver(validationSchema),
   });
 
-  useEffect(() => {
-    setFocus('workspaceName');
-  }, [setFocus]);
+  const { isInputValid } = useValidateInput(fetchURLValidate);
+
+  useEffect(
+    function () {
+      setFocus('workspaceName');
+
+      return function () {
+        cachedUrlValidations.clear();
+      };
+    },
+    [setFocus],
+  );
 
   const onSubmit = handleSubmit(async function ({
     workspaceName,
@@ -50,16 +60,23 @@ export function SetupHomeForWork() {
 
     try {
       if (workspaceUrlSlug.trim()) {
-        const urlValidationMessage = await fetchURLValidate(workspaceUrlSlug);
+        const urlValidationMessage = await isInputValid(
+          workspaceUrlSlug.trim(),
+        );
 
         if (urlValidationMessage) {
           flushSync(() => {
             setLoading(false);
           });
 
-          if (urlValidationMessage !== "Couldn't validate the URL") {
-            cachedUrlNotAvailable.push(workspaceUrlSlug.trim());
+          if (urlValidationMessage === "Couldn't validate the URL") {
+            throw new Error(urlValidationMessage);
           }
+
+          cachedUrlValidations.set(
+            workspaceUrlSlug.trim(),
+            urlValidationMessage,
+          );
 
           return setError(
             'workspaceUrlSlug',
@@ -149,7 +166,10 @@ const validationSchema = object().shape({
       if (!urlSlug) {
         return true;
       } else {
-        return !cachedUrlNotAvailable.includes(urlSlug);
+        return (
+          cachedUrlValidations.get(urlSlug.trim()) !==
+          'This URL is already taken'
+        );
       }
     }),
 });
