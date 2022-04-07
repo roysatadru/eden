@@ -39,7 +39,12 @@ export function SetupHomeForWork() {
     resolver: yupResolver(validationSchema),
   });
 
-  const { isInputValid } = useValidateInput(fetchURLValidate);
+  const { isInputValid } = useValidateInput({
+    checkAsync: fetchURLValidate,
+    catchError: function () {
+      return "Couldn't validate the URL";
+    },
+  });
 
   useEffect(
     function () {

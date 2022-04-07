@@ -45,15 +45,18 @@ export function WelcomeFirst() {
     errorMessage: usernameErrorMessage,
     isValidating: isUsernameValidating,
     isInputValid: isUsernameValid,
-  } = useValidateInput(
-    fetchValidateUsername,
-    function (username) {
+  } = useValidateInput({
+    checkAsync: fetchValidateUsername,
+    catchError: function () {
+      return "Couldn't validate username";
+    },
+    checkSync: function (username) {
       return !username.trim().match(/^[a-zA-Z0-9_]+$/)
         ? 'Must only contain letters, numbers and underscores'
         : null;
     },
-    username.trim().toLowerCase(),
-  );
+    inputValue: username.trim().toLowerCase(),
+  });
 
   useEffect(() => {
     setFocus('name');
