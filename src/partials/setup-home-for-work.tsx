@@ -3,6 +3,7 @@ import { flushSync } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { object, string } from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import toast from 'react-hot-toast';
 
 import { Button } from '../components/button';
 import { TextField } from '../components/text-field';
@@ -11,7 +12,7 @@ import { FormLayout } from '../layouts/form-layout';
 import { promisifiedSetTimeout } from '../utils/promisified-set-timeout';
 import { useUserContext } from '../hooks/use-user-context';
 import { fetchURLValidate } from '../api/fetch-url-validate';
-import { useValidateInput } from '../hooks/use-validate-input';
+import { Messages, useValidateInput } from '../hooks/use-validate-input';
 
 const cachedUrlValidations = new Map<string, string>();
 
@@ -39,7 +40,12 @@ export function SetupHomeForWork() {
     resolver: yupResolver(validationSchema),
   });
 
-  const { isInputValid } = useValidateInput(fetchURLValidate);
+  const { isInputValid } = useValidateInput({
+    checkAsync: fetchURLValidate,
+    catchError: function () {
+      return "Couldn't validate the URL";
+    },
+  });
 
   useEffect(
     function () {
@@ -47,6 +53,7 @@ export function SetupHomeForWork() {
 
       return function () {
         cachedUrlValidations.clear();
+        toast.remove();
       };
     },
     [setFocus],
@@ -69,8 +76,19 @@ export function SetupHomeForWork() {
             setLoading(false);
           });
 
-          if (urlValidationMessage === "Couldn't validate the URL") {
-            throw new Error(urlValidationMessage);
+          if (urlValidationMessage === Messages.Loading) {
+            return;
+          }
+
+          if (
+            urlValidationMessage === "Couldn't validate the URL" ||
+            urlValidationMessage === Messages.SomethingWentWrong
+          ) {
+            throw new Error(
+              typeof urlValidationMessage === 'string'
+                ? urlValidationMessage
+                : 'Something went wrong! Please try again later...',
+            );
           }
 
           cachedUrlValidations.set(
@@ -107,8 +125,12 @@ export function SetupHomeForWork() {
       }
     } catch (error) {
       setLoading(false);
-      // TODO: show error toast
-      // console.error(error);
+
+      toast.remove();
+
+      if (error && error instanceof Error) {
+        toast.error(error.message);
+      }
     }
   });
 
