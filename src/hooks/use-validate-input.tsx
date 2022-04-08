@@ -3,64 +3,32 @@ import isEqual from 'lodash.isequal';
 
 import { useMemoReferenceValues } from './use-memo-reference-values';
 
-type ParamsType<T, K> = K extends unknown ? T : K;
+export enum Messages {
+  Loading = 1,
+  SomethingWentWrong = 2,
+}
 
-type CachedValidationsMessages<T, K, A, S, C> = {
-  reqKey: ParamsType<T, K>;
-  validationMessage:
-    | ParamsType<null, A>
-    | ParamsType<null, S>
-    | ParamsType<null, C>;
+type CachedValidationsMessages<T> = {
+  reqKey: T;
+  validationMessage: string;
 }[];
 
-type UseValidateInputParams<T, K, A, S, C> = (
+type UseValidateInputParams<T> = (
   | {
-      checkAsync: (params: ParamsType<T, K>) => Promise<A | null>;
-      catchError: (err: Error) => Promise<C | null> | (C | null);
+      checkAsync: (params: T) => Promise<string | null>;
+      catchError: (err: Error) => Promise<string | null> | (string | null);
     }
   | {
       checkAsync?: undefined;
       catchError?: undefined;
     }
 ) & {
-  checkSync?: (params: ParamsType<T, K>) => S | null;
-  inputValue?: ParamsType<T, K>;
+  checkSync?: (params: T) => string | null;
+  inputValue?: T;
   debounceTimeInMs?: number;
 };
 
-export function useValidateInput<
-  UseValidateInputValue,
-  IsInputValidParams,
-  AsyncMessages extends string,
-  SyncMessages extends string,
-  CatchErrorMessage extends string,
->(
-  params: UseValidateInputParams<
-    UseValidateInputValue,
-    IsInputValidParams,
-    AsyncMessages,
-    SyncMessages,
-    CatchErrorMessage
-  >,
-) {
-  type InputLoadedStateType = ParamsType<
-    UseValidateInputValue,
-    IsInputValidParams
-  >[];
-
-  type CachedValidationRefType = CachedValidationsMessages<
-    UseValidateInputValue,
-    IsInputValidParams,
-    AsyncMessages,
-    SyncMessages,
-    CatchErrorMessage
-  >;
-
-  type ErrorMessages =
-    | ParamsType<null, AsyncMessages>
-    | ParamsType<null, SyncMessages>
-    | ParamsType<null, CatchErrorMessage>;
-
+export function useValidateInput<T>(params: UseValidateInputParams<T>) {
   const {
     checkAsync,
     catchError,
@@ -76,26 +44,42 @@ export function useValidateInput<
 
   const debounceTime = useRef(debounceTimeInMs).current;
 
-  const cachedValidationRef = useRef<CachedValidationRefType>([]);
-  const catchErrorMessagesRef = useRef<CatchErrorMessage[]>([]);
+  const cachedValidationRef = useRef<CachedValidationsMessages<T>>([]);
+  const catchErrorMessagesRef = useRef<string[]>([]);
 
-  const [inputLoaded, setInputLoaded] = useState<InputLoadedStateType>([]);
+  const [inputLoaded, setInputLoaded] = useState<T[]>([]);
 
-  const getCatchErrorMessage = useCallback(function (
-    reqKey: ParamsType<UseValidateInputValue, IsInputValidParams>,
-    errorMessage: ErrorMessages,
+  const getCatchErrorMessage = useCallback(async function (
+    reqKey: T,
+    errorMessage?: string | Promise<string | null> | null,
   ) {
-    if (!errorMessage) {
-      return;
-    } else if (typeof errorMessage === 'string') {
+    function pushErrorMessages(errorMessage: string) {
+      catchErrorMessagesRef.current.push(errorMessage);
       cachedValidationRef.current.push({
         reqKey,
         validationMessage: errorMessage,
       });
-      return;
-    } else {
-      return 'proceed';
     }
+
+    if (!errorMessage) {
+      return null;
+    }
+
+    if (typeof errorMessage === 'string') {
+      pushErrorMessages(errorMessage);
+      return errorMessage;
+    }
+
+    if (errorMessage instanceof Promise) {
+      const errorMessagePromise = await errorMessage;
+
+      if (errorMessagePromise) {
+        pushErrorMessages(errorMessagePromise);
+        return errorMessagePromise;
+      }
+    }
+
+    return null;
   },
   []);
 
@@ -110,13 +94,15 @@ export function useValidateInput<
         cachedValidationRef.current.find(
           ({ reqKey, validationMessage }) =>
             isEqual(reqKey, inputValueMemo) &&
-            !catchErrorMessagesRef.current.includes(
-              validationMessage as CatchErrorMessage,
-            ),
+            !catchErrorMessagesRef.current.includes(validationMessage),
         )
       ) {
         return;
       }
+
+      cachedValidationRef.current = cachedValidationRef.current.filter(
+        ({ reqKey }) => !isEqual(reqKey, inputValueMemo),
+      );
 
       // sync validations taking place
       const validationSyncMessage = checkSyncMemo?.(inputValueMemo);
@@ -125,7 +111,7 @@ export function useValidateInput<
         setInputLoaded(cur => [...cur, inputValueMemo]);
         cachedValidationRef.current.push({
           reqKey: inputValueMemo,
-          validationMessage: validationSyncMessage as ErrorMessages,
+          validationMessage: validationSyncMessage,
         });
 
         return;
@@ -143,28 +129,15 @@ export function useValidateInput<
               if (data) {
                 cachedValidationRef.current.push({
                   reqKey: inputValueMemo,
-                  validationMessage: data as ErrorMessages,
+                  validationMessage: data,
                 });
               }
             })
             .catch(async function (err) {
-              const errorMessage = catchErrorMemo?.(err);
-
-              const isProceed = getCatchErrorMessage(
+              return getCatchErrorMessage(
                 inputValueMemo,
-                errorMessage as ErrorMessages,
+                catchErrorMemo?.(err),
               );
-
-              if (!isProceed) {
-                return;
-              }
-
-              getCatchErrorMessage(
-                inputValueMemo,
-                (await errorMessage) as ErrorMessages,
-              );
-
-              return;
             })
             .finally(function () {
               setInputLoaded(cur => [...cur, inputValueMemo]);
@@ -187,7 +160,7 @@ export function useValidateInput<
   );
 
   const isLoading = useCallback(
-    function (value?: ParamsType<UseValidateInputValue, IsInputValidParams>) {
+    function (value?: T) {
       if (!value) {
         return false;
       }
@@ -199,14 +172,13 @@ export function useValidateInput<
     [inputLoaded],
   );
 
-  const getErrorMessage = useCallback(function (
-    value?: ParamsType<UseValidateInputValue, IsInputValidParams>,
-  ) {
-    return cachedValidationRef.current.find(function ({ reqKey }) {
-      return isEqual(reqKey, value);
-    })?.validationMessage;
-  },
-  []);
+  const getErrorMessage = useCallback(function (value?: T) {
+    return (
+      cachedValidationRef.current.find(function ({ reqKey }) {
+        return isEqual(reqKey, value);
+      })?.validationMessage ?? null
+    );
+  }, []);
 
   return {
     isValidating: isLoading(inputValueMemo),
@@ -215,31 +187,32 @@ export function useValidateInput<
 
     // a function to validate the input without debounce
     isInputValid: useCallback(
-      async function (params: IsInputValidParams) {
-        const updatedParams = params as ParamsType<
-          UseValidateInputValue,
-          IsInputValidParams
-        >;
+      async function <K>(params: T extends unknown ? K : T) {
+        const updatedParams = params as T;
 
         const validationFromCache =
           getErrorMessage(updatedParams) ||
-          (inputValueMemo ? isLoading(updatedParams) : false);
+          (updatedParams ? isLoading(updatedParams) : false);
 
         if (
-          !!validationFromCache &&
-          !catchErrorMessagesRef.current.includes(validationFromCache as never)
+          validationFromCache &&
+          !catchErrorMessagesRef.current.includes(validationFromCache as string)
         ) {
           return typeof validationFromCache === 'string'
             ? validationFromCache
-            : 'Loading...';
+            : Messages.Loading;
         }
+
+        cachedValidationRef.current = cachedValidationRef.current.filter(
+          ({ reqKey }) => !isEqual(reqKey, updatedParams),
+        );
 
         const validationSyncMessage = checkSyncMemo?.(updatedParams);
 
         if (validationSyncMessage) {
           cachedValidationRef.current.push({
             reqKey: updatedParams,
-            validationMessage: validationSyncMessage as ErrorMessages,
+            validationMessage: validationSyncMessage,
           });
 
           return validationSyncMessage;
@@ -249,25 +222,34 @@ export function useValidateInput<
           return null;
         }
 
-        const validationAsyncMessage = await checkAsyncMemo(updatedParams);
+        try {
+          const validationAsyncMessage = await checkAsyncMemo(updatedParams);
 
-        if (validationAsyncMessage) {
-          cachedValidationRef.current.push({
-            reqKey: updatedParams,
-            validationMessage: validationAsyncMessage as ErrorMessages,
-          });
+          if (validationAsyncMessage) {
+            cachedValidationRef.current.push({
+              reqKey: updatedParams,
+              validationMessage: validationAsyncMessage,
+            });
 
-          return validationAsyncMessage;
+            return validationAsyncMessage;
+          }
+
+          return null;
+        } catch (err) {
+          if (!(err instanceof Error)) {
+            return Messages.SomethingWentWrong;
+          }
+
+          return getCatchErrorMessage(updatedParams, catchErrorMemo?.(err));
         }
-
-        return null;
       },
       [
-        checkAsyncMemo,
-        checkSyncMemo,
         getErrorMessage,
         isLoading,
-        inputValueMemo,
+        checkSyncMemo,
+        checkAsyncMemo,
+        catchErrorMemo,
+        getCatchErrorMessage,
       ],
     ),
   };

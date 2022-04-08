@@ -3,6 +3,7 @@ import { flushSync } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { object, string } from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import toast from 'react-hot-toast';
 
 import { Button } from '../components/button';
 import { TextField } from '../components/text-field';
@@ -11,7 +12,7 @@ import { useUserContext } from '../hooks/use-user-context';
 import { FormLayout } from '../layouts/form-layout';
 import { promisifiedSetTimeout } from '../utils/promisified-set-timeout';
 import { RingLoader } from '../components/ring-loader';
-import { useValidateInput } from '../hooks/use-validate-input';
+import { useValidateInput, Messages } from '../hooks/use-validate-input';
 import { fetchValidateUsername } from '../api/fetch-username-validate';
 
 const initialValues = {
@@ -60,6 +61,8 @@ export function WelcomeFirst() {
 
   useEffect(() => {
     setFocus('name');
+
+    return toast.remove;
   }, [setFocus]);
 
   const onSubmit = handleSubmit(async function ({ name, username }) {
@@ -75,8 +78,19 @@ export function WelcomeFirst() {
           setLoading(false);
         });
 
-        if (usernameValidationMessage === "Couldn't validate username") {
-          throw new Error(usernameValidationMessage);
+        if (usernameValidationMessage === Messages.Loading) {
+          return setFocus('username');
+        }
+
+        if (
+          usernameValidationMessage === "Couldn't validate username" ||
+          usernameValidationMessage === Messages.SomethingWentWrong
+        ) {
+          throw new Error(
+            typeof usernameValidationMessage === 'string'
+              ? usernameValidationMessage
+              : 'Something went wrong! Please try again later...',
+          );
         }
 
         return setError(
@@ -113,8 +127,12 @@ export function WelcomeFirst() {
       }
     } catch (error) {
       setLoading(false);
-      // TODO: show error toast
-      // console.error(error);
+
+      toast.remove();
+
+      if (error && error instanceof Error) {
+        toast.error(error.message);
+      }
     }
   });
 

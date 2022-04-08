@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 
 import { Button } from '../components/button';
 import { Card } from '../components/card';
@@ -20,6 +21,8 @@ export function PlanToUseEden() {
     if (firstOptionRef.current) {
       firstOptionRef.current.focus();
     }
+
+    return toast.remove;
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -50,8 +53,12 @@ export function PlanToUseEden() {
         }
       } catch (error) {
         setLoading(false);
-        // TODO: show error toast
-        // console.error(error);
+
+        toast.remove();
+
+        if (error && error instanceof Error) {
+          toast.error(error.message);
+        }
       }
     }
   }
