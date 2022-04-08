@@ -192,7 +192,9 @@ export function useValidateInput<T>(params: UseValidateInputParams<T>) {
 
         const validationFromCache =
           getErrorMessage(updatedParams) ||
-          (updatedParams ? isLoading(updatedParams) : false);
+          (updatedParams
+            ? !!inputValueMemo && isLoading(updatedParams)
+            : false);
 
         if (
           validationFromCache &&
@@ -246,10 +248,11 @@ export function useValidateInput<T>(params: UseValidateInputParams<T>) {
       [
         getErrorMessage,
         isLoading,
+        inputValueMemo,
         checkSyncMemo,
         checkAsyncMemo,
-        catchErrorMemo,
         getCatchErrorMessage,
+        catchErrorMemo,
       ],
     ),
   };
